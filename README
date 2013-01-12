@@ -1,0 +1,114 @@
+==========================================================================
+      ALERT's KESI - Knowledge Extractor for Structured Information 
+==========================================================================
+
+The Knowledge Extractor for Structured Information (or KESI) is a component
+of the ALERT platform [1] design to to gather information from source code 
+repositories and from issue/bug tracking systems. Once the information has
+been gathered, is transformed into a format known by the rest of the
+components of the platform and published in a message queue.
+
+The information obtained by the KESI is critical in the following scenarios:
+ - Recommend a developer which bug to solve.
+ - Detect duplicated bugs.
+ - Let the developer know about buggy parts of the code.
+ - Identifying inactive developers and orphaned parts of the code
+ 
+This program is free software under the terms of the GNU General Public
+License, version 2 or any later version.
+
+== Features ==
+ - Supports several types of repositories
+   - Source Code Management Systems (SCM): Git, Subversion
+   - Issue tracking systems (ITS): Bugzilla, Jira
+ - Uses external tools for gathering information
+   - Source Code Management Systems (SCM): CVSAnalY
+   - Issue tracking systems (ITS): Bicho
+ - Incremental analysis
+ - Publishes the changes in repositories as events via MQ
+
+== Requirements ==
+ - Any implementation of Java Platform, Standard Edition (>= 1.6)
+ - JDBC driver for MySQL [2]
+ - JavaMail API (>= 1.4.4) [3]
+ - Apache Geronimo JMS (>= 1.1.1) [4]
+ - Apache ActiveMQ Core (>= 5.5.1) [5]
+ - CVSAnalY (>= 2.1.2-M24-alert) [6]
+ - Bicho (>= 0.13-alert) [7]
+ 
+== Getting the code ==
+
+ - ZIP package
+     http://github.com/AlertProject/KESI/archive/master.zip
+
+ - Git repository
+     git://github.com/AlertProject/KESI.git
+     
+== Building KESI ==
+
+To build KESI you will need any implementation of the Java Development
+Kit (>= 1.6) and Maven (>= 2) [8]. Once you have installed these software
+tools, run the next command from the KESI root folder.
+
+ $ mvn package [-Ddir=<path>]
+ 
+This command will build the program and will create several packages
+in <path>. If <path> is not set, the packages will be stored by default
+in the directory "target" of your KESI root directory.
+
+== Configuration ==
+
+KESI uses the Java Preferences files to store its configuration
+parameters. Examples of these can be found in "src/config" directory.
+
+In addition, you will need to create two databases for storing the
+data retrieved from issue tracking systems and source code repositories.
+
+== Running KESI ==
+
+To run KESI you will need the file "KESI-{version}-all.jar" created
+during the building phase. Type the next command and KESI will run.
+
+ $ java -jar KESI-{version}-all.jar [<config>] 
+
+Where <config> is the file with the configuration parameters.
+For your first execution, you will need a config file. See "src/config"
+directory for examples.
+
+ATTENTION: Please take into account that running KESI with a
+configuration file will delete other configuration parameters set
+from previous executions.
+
+== License ==
+
+This program is free software; you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation; either version 2 of the License, or (at
+your option) any later version.
+
+This program is distributed in the hope that it will be useful, but
+WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
+
+The full version of this license can be found in the file LICENSE,
+distributed along with this program.
+
+== Links ==
+
+ - Website
+     http://github.com/AlertProject/KESI
+     
+ - Issue tracking system
+     http://github.com/AlertProject/KESI/issues
+
+== Other links ==
+
+[1] http://www.alert-project.eu/
+[2] http://dev.mysql.com/downloads/connector/j/
+[3] http://kenai.com/projects/javamail/downloads
+[4] http://geronimo.apache.org/maven/specs/geronimo-jms_1.1_spec/index.html
+[5] http://activemq.apache.org/download.html
+[6] http://github.com/AlertProject/CVSAnalY (ALERT fork)
+[7] http://github.com/AlertProject/Bicho (ALERT fork)
+[8] http://maven.apache.org/
