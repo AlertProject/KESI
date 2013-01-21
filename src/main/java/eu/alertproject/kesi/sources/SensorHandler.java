@@ -45,7 +45,7 @@ import eu.alertproject.kesi.extractors.ExtractionManager;
 import eu.alertproject.kesi.model.StructuredKnowledgeSource;
 
 public class SensorHandler extends Thread {
-    /* Mail prorperties keys */
+    /* Mail properties keys */
     private static final String MAIL_PROTOCOL_KEY = "mail.store.protocol";
     private static final String IMAP_CONN_TIMEOUT_KEY = "mail.imap.connectiontimeout";
     private static final String IMAP_TIMEOUT_KEY = "mail.imap.timeout";
@@ -55,7 +55,7 @@ public class SensorHandler extends Thread {
      * ITS repositories TODO: add support for JIRA and GitHub
      */
     private static final String BUGZILLA_PATTERN = "\\[Bug ([0-9]+)\\] .+";
-    private static final String SCM_PATTERN = "([0-9]+) (.+)";
+    private static final String SCM_PATTERN = "\\[SCM\\] \\[(.+)\\].*";
 
     static Logger logger = Logger.getLogger(SensorHandler.class);
 
@@ -114,10 +114,8 @@ public class SensorHandler extends Thread {
                     } catch (SensorHandlerError e) {
                         logger.error(e);
                         logger.error("Ignoring message.");
-                        continue;
                     } catch (SourcesManagerError e) {
                         logger.error(e);
-                        continue;
                     }
 
                     message.setFlag(Flags.Flag.SEEN, true);
@@ -227,7 +225,7 @@ public class SensorHandler extends Thread {
 
                 if (matcher.find()) {
                     /* Extracts data from SCMs */
-                    url = matcher.group(2);
+                    url = matcher.group(1);
                 }
             }
 
