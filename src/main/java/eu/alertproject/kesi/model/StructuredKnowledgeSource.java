@@ -104,11 +104,11 @@ public class StructuredKnowledgeSource extends Entity {
         this.setup = setup;
     }
 
-    public Date getDate() {
+    public synchronized Date getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public synchronized void setDate(Date date) {
         this.date = date;
     }
 

@@ -41,7 +41,6 @@ import eu.alertproject.kesi.sources.SourcesManagerError;
 public abstract class Extractor extends Thread {
     private final String extractor;
     private final Queue<ExtractionJob> queue;
-    private Timestamp lastSent;
 
     protected Logger logger = null;
 
@@ -55,9 +54,10 @@ public abstract class Extractor extends Thread {
         try {
             ExtractionJob job;
 
-            lastSent = getLastSent();
-
             while (true) {
+                StructuredKnowledgeSource source;
+                Timestamp lastSent;
+
                 job = getNextJob();
 
                 try {
@@ -67,7 +67,10 @@ public abstract class Extractor extends Thread {
                     continue;
                 }
 
-                generateEvents(job.getSource(), lastSent);
+                source = job.getSource();
+                lastSent = dateToTimestamp(source.getDate());
+
+                generateEvents(source, lastSent);
             }
         } catch (InterruptedException e) {
             logger.error("", e);
@@ -79,8 +82,6 @@ public abstract class Extractor extends Thread {
 
     public abstract String[] getCommandExtractor(String url, String type,
             String user, String password);
-
-    public abstract Timestamp getLastSent();
 
     private ExtractionJob getNextJob() throws InterruptedException {
         return queue.take();

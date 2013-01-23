@@ -96,7 +96,6 @@ public enum EventGenerator {
     private class EventGeneratorThread extends Thread {
         private final DatabaseFactory factory;
         private final Queue<EventJob> queue;
-        private Timestamp lastSent;
 
         public EventGeneratorThread(Queue<EventJob> queue) {
             this.queue = queue;
@@ -142,7 +141,6 @@ public enum EventGenerator {
                     /* Publish event */
                     EventPublisher.INSTANCE.publish(event);
                     logger.info(eventName + " sent");
-                    lastSent = stringToTimestamp(event.getEventDate());
                     logger.debug(event.getContent());
                     ++numEvents;
                 } catch (Exception e) {

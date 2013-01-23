@@ -427,6 +427,28 @@ public enum PreferencesManager {
         return repositories;
     }
 
+    public void updateSource(StructuredKnowledgeSource src)
+            throws PreferencesError {
+        Preferences sourceNode;
+
+        if (src instanceof IssueTracker) {
+            sourceNode = sources.node(SOURCES_ITS_NODE_ROOT);
+        } else {
+            sourceNode = sources.node(SOURCES_SCM_NODE_ROOT);
+        }
+
+        sourceNode = sourceNode.node(src.getId());
+        sourceNode.put(PREF_SOURCES_LAST_SENT,
+                Database.dateToString(src.getDate()));
+
+        try {
+            sourceNode.sync();
+        } catch (BackingStoreException e) {
+            String msg = "Error updating source. " + e.getMessage();
+            throw new PreferencesError(msg);
+        }
+    }
+
     public String getSourcesDownloadPath() {
         return sources.get(PREF_SOURCES_DOWNLOAD_PATH,
                 DEF_SOURCES_DOWNLOAD_PATH);

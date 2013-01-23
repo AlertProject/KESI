@@ -38,13 +38,11 @@ public class SCMEventSet implements EventSet {
     private static Logger logger = Logger.getLogger(SCMEventSet.class);
 
     private final SCMRetrieval conn;
-    private final Timestamp lastSent;
     private final ArrayList<EventSummary> events;
 
     public SCMEventSet(SCMRetrieval connection, String url, Timestamp lastSent)
             throws DatabaseExtractionError {
         this.conn = connection;
-        this.lastSent = lastSent;
         this.events = this.conn.getEventsSummary(url, lastSent);
     }
 

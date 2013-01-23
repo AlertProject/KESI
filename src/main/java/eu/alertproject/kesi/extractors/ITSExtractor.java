@@ -22,16 +22,12 @@
 
 package eu.alertproject.kesi.extractors;
 
-import java.text.ParseException;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
-import java.sql.Timestamp;
 
 import org.apache.log4j.Logger;
 
 import eu.alertproject.kesi.PreferencesManager;
-import eu.alertproject.kesi.database.Database;
 import eu.alertproject.kesi.jobs.ExtractionJob;
 import eu.alertproject.kesi.jobs.Queue;
 
@@ -96,19 +92,6 @@ public class ITSExtractor extends Extractor {
                 "--db-database-out", database, "--backend-user", user,
                 "--backend-password", password, "-d", "1", "-u", url };
         return cmd;
-    }
-
-    @Override
-    public Timestamp getLastSent() {
-        // FIXME: date
-        Date date;
-        try {
-            date = Database.stringToDate("0001-01-01 00:00:01");
-        } catch (ParseException e) {
-            // FIXME
-            date = null;
-        }
-        return dateToTimestamp(date);
     }
 
 }

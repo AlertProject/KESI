@@ -347,6 +347,7 @@ public class Issue extends Entity {
 
         event.setContent(toXML());
         event.setEventDate(date);
+        event.setSourceURI(issueTracker.getURI().toASCIIString());
 
         return event;
     }

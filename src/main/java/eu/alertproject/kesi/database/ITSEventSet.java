@@ -37,13 +37,11 @@ public class ITSEventSet implements EventSet {
     private static Logger logger = Logger.getLogger(ITSEventSet.class);
 
     private final ITSRetrieval conn;
-    private final Timestamp lastSent;
     private final ArrayList<EventSummary> events;
 
     public ITSEventSet(ITSRetrieval connection, String url, Timestamp lastSent)
             throws DatabaseExtractionError {
         this.conn = connection;
-        this.lastSent = lastSent;
         this.events = this.conn.getEventsSummary(url, lastSent);
     }
 

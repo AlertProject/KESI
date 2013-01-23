@@ -159,8 +159,11 @@ public class Commit extends Entity {
     public Event toEvent() throws JAXBException {
         EventFactory eventFactory = new EventFactory();
         Event event = eventFactory.createCommitNewEvent();
+
         event.setEventDate(commitDate);
         event.setContent(toXML());
+        event.setSourceURI(repositoryURI.toASCIIString());
+
         return event;
     }
 

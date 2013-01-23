@@ -70,6 +70,7 @@ public abstract class Event {
     protected String eventName;
     protected String eventDate;
     protected String content;
+    protected String sourceURI;
 
     public Event() {
         this.eventID = generateEventID();
@@ -97,6 +98,14 @@ public abstract class Event {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getSourceURI() {
+        return sourceURI;
+    }
+
+    public void setSourceURI(String sourceURI) {
+        this.sourceURI = sourceURI;
     }
 
     public String toMessage(String sequenceNumber) {

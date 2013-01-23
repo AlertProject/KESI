@@ -96,6 +96,11 @@ public class Database {
      * FIXME: move these to functions to other site change name of
      * dateToString
      */
+    public static String dateToString(Date d) {
+        SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd H:m:s");
+        return new String(date.format(d));
+    }
+
     public static String dateToString(Timestamp d) {
         SimpleDateFormat date = new SimpleDateFormat("yyyy-MM-dd H:m:s");
         return new String(date.format(d));

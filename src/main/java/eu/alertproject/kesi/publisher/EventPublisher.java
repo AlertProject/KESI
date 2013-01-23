@@ -28,6 +28,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.ParseException;
+import java.util.Date;
 import java.util.Properties;
 
 import javax.jms.JMSException;
@@ -44,10 +46,15 @@ import javax.naming.NamingException;
 
 import org.apache.log4j.Logger;
 
+import eu.alertproject.kesi.PreferencesError;
 import eu.alertproject.kesi.PreferencesManager;
+import eu.alertproject.kesi.database.Database;
 import eu.alertproject.kesi.events.Event;
 import eu.alertproject.kesi.events.EventFactory;
 import eu.alertproject.kesi.jobs.Queue;
+import eu.alertproject.kesi.model.StructuredKnowledgeSource;
+import eu.alertproject.kesi.sources.SourcesManager;
+import eu.alertproject.kesi.sources.SourcesManagerError;
 
 /**
  * Singleton implementation based on enum types. See Joshua Bloch's
@@ -172,6 +179,7 @@ public enum EventPublisher {
             }
 
             while (true) {
+                Event event;
                 PublicationJob job;
 
                 try {
@@ -186,18 +194,38 @@ public enum EventPublisher {
                     continue;
                 }
 
+                event = job.getEvent();
+
                 if (debug) {
                     sendFakeEvent(job.getEvent());
-                    continue;
+                } else {
+                    try {
+                        sendEvent(event);
+                    } catch (JMSException e) {
+                        logger.error(
+                                "Unexpected error sending event. Ignoring it.",
+                                e);
+                        continue;
+                    } catch (NamingException e) {
+                        logger.error("JNDI API lookup failed. Ignoring event.",
+                                e);
+                        continue;
+                    }
                 }
 
                 try {
-                    sendEvent(job.getEvent());
-                } catch (JMSException e) {
-                    logger.error(
-                            "Unexpected error sending event. Ignoring it.", e);
-                } catch (NamingException e) {
-                    logger.error("JNDI API lookup failed. Ignoring event.", e);
+                    StructuredKnowledgeSource source = SourcesManager.INSTANCE
+                            .getSource(event.getSourceURI());
+                    Date date = Database.stringToDate(event.getEventDate());
+
+                    source.setDate(date);
+                    PreferencesManager.INSTANCE.updateSource(source);
+                } catch (SourcesManagerError e) {
+                    logger.error("Updating source", e);
+                } catch (ParseException e) {
+                    logger.error("Updating source", e);
+                } catch (PreferencesError e) {
+                    logger.error("Updating source", e);
                 }
             }
         }
