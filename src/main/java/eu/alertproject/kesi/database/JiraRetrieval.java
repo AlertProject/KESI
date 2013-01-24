@@ -229,9 +229,8 @@ public class JiraRetrieval extends ITSRetrieval {
     }
 
     @Override
-    protected URI getIssueURL(int issueID) throws SQLException {
+    protected URI getIssueURL(int issueID, String publicID) throws SQLException {
         String link;
-        URI issueURL;
         PreparedStatement stmt;
         ResultSet rs;
 
@@ -245,14 +244,12 @@ public class JiraRetrieval extends ITSRetrieval {
         stmt.close();
 
         try {
-            issueURL = new URI(link);
+            return new URI(link);
         } catch (URISyntaxException e) {
             logger.error("Error converting URI for issue " + issueID
                     + ". Set to null.", e);
-            issueURL = null;
+            return null;
         }
-
-        return issueURL;
     }
 
 }

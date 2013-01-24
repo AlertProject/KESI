@@ -194,12 +194,12 @@ public class BugzillaRetrieval extends ITSRetrieval {
     }
 
     @Override
-    protected URI getIssueURL(int issueID) throws SQLException {
+    protected URI getIssueURL(int issueID, String publicID) throws SQLException {
         IssueTracker tracker = getTrackerFromIssue(issueID);
 
         try {
             URI issueURL = new URI(tracker.getURI().toString()
-                    + "show_bug.cgi?id=" + issueID);
+                    + "show_bug.cgi?id=" + publicID);
             return issueURL;
         } catch (URISyntaxException e) {
             logger.error("Error converting URI for issue " + issueID

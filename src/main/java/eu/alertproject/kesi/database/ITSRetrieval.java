@@ -132,7 +132,8 @@ public abstract class ITSRetrieval extends Database {
     public abstract Issue getEventIssueUpdateChange(int changeID, int issueID)
             throws DatabaseExtractionError;
 
-    protected abstract URI getIssueURL(int issueID) throws SQLException;
+    protected abstract URI getIssueURL(int issueID, String publicID)
+            throws SQLException;
 
     protected abstract String toStatus(String value);
 
@@ -311,7 +312,7 @@ public abstract class ITSRetrieval extends Database {
         stmt.close();
 
         issue = new Issue(publicID);
-        issue.setIssueURL(getIssueURL(issueID));
+        issue.setIssueURL(getIssueURL(issueID, publicID));
 
         tracker = getTracker(trackerID);
         issue.setIssueTracker(tracker);
