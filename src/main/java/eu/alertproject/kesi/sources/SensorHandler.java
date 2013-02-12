@@ -21,19 +21,14 @@
 
 package eu.alertproject.kesi.sources;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.mail.BodyPart;
 import javax.mail.Flags;
 import javax.mail.Folder;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Multipart;
 import javax.mail.Session;
 import javax.mail.Store;
 import javax.mail.search.FlagTerm;
@@ -56,6 +51,12 @@ public class SensorHandler extends Thread {
      */
     private static final String BUGZILLA_PATTERN = "\\[Bug ([0-9]+)\\] .+";
     private static final String SCM_PATTERN = "\\[SCM\\] \\[(.+)\\].*";
+
+    /*
+     * Bugzilla headers
+     */
+    private static final String BUGZILLA_URL_HEADER = "X-Bugzilla-URL";
+    private static final String BUGZILLA_PRODUCT_HEADER = "X-Bugzilla-Product";
 
     static Logger logger = Logger.getLogger(SensorHandler.class);
 
@@ -159,20 +160,6 @@ public class SensorHandler extends Thread {
         return store;
     }
 
-    private String convertStreamToString(InputStream is) {
-        /*
-         * Method taken Pavel Repin's solution to from
-         * http://stackoverflow
-         * .com/questions/309424/read-convert-an-inputstream
-         * -to-a-string
-         */
-        try {
-            return new java.util.Scanner(is).useDelimiter("\\A").next();
-        } catch (java.util.NoSuchElementException e) {
-            return "";
-        }
-    }
-
     private String parseURLFromMessage(Message message)
             throws SensorHandlerError {
         try {
@@ -187,38 +174,11 @@ public class SensorHandler extends Thread {
 
             if (matcher.find()) {
                 /* Extracts data from bugzilla mail */
-                try {
-                    Object content;
-                    String body = new String();
+                String bugzillaURL = message.getHeader(BUGZILLA_URL_HEADER)[0];
+                String bugzillaProduct = message
+                        .getHeader(BUGZILLA_PRODUCT_HEADER)[0];
 
-                    content = message.getContent();
-
-                    if (content instanceof String) {
-                        body = (String) content;
-                    } else if (content instanceof Multipart) {
-                        Multipart mp = (Multipart) content;
-
-                        for (int i = 0; i < mp.getCount(); i++) {
-                            BodyPart bp = mp.getBodyPart(i);
-                            body = body.concat(convertStreamToString(bp
-                                    .getInputStream()));
-                        }
-                    } else {
-                        String msg = "Error in body content for message "
-                                + message.getMessageNumber();
-                        throw new SensorHandlerError(msg);
-                    }
-
-                    url = body.substring(0, body.indexOf('\n'));
-                } catch (MalformedURLException e) {
-                    String msg = "Error parsing the URL. " + e.getMessage();
-                    logger.error(msg, e);
-                    throw new SensorHandlerError(msg);
-                } catch (IOException e) {
-                    String msg = "Error parsing the message. " + e.getMessage();
-                    logger.error(msg, e);
-                    throw new SensorHandlerError(msg);
-                }
+                url = bugzillaURL + "buglist.cgi?product=" + bugzillaProduct;
             } else {
                 pattern = Pattern.compile(SCM_PATTERN);
                 matcher = pattern.matcher(subject);
