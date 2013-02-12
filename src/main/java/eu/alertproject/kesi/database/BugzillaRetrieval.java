@@ -26,10 +26,7 @@ import java.net.URISyntaxException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.util.ArrayList;
 
-import eu.alertproject.kesi.events.EventSummary;
 import eu.alertproject.kesi.model.Activity;
 import eu.alertproject.kesi.model.ComputerSystem;
 import eu.alertproject.kesi.model.Issue;
@@ -106,13 +103,6 @@ public class BugzillaRetrieval extends ITSRetrieval {
             String host, String port, String database)
             throws DriverNotSupportedError, DatabaseConnectionError {
         super(driver, username, password, host, port, database);
-    }
-
-    @Override
-    public ArrayList<EventSummary> getEventsSummary(String trackerURL,
-            Timestamp lastSent) throws DatabaseExtractionError {
-        String url = trackerURL.replaceFirst("buglist\\.cgi.*$", "");
-        return super.getEventsSummary(url, lastSent);
     }
 
     @Override
@@ -198,8 +188,9 @@ public class BugzillaRetrieval extends ITSRetrieval {
         IssueTracker tracker = getTrackerFromIssue(issueID);
 
         try {
-            URI issueURL = new URI(tracker.getURI().toString()
-                    + "show_bug.cgi?id=" + publicID);
+            String baseURL = tracker.getURI().toASCIIString()
+                    .replaceFirst("buglist\\.cgi.*$", "");
+            URI issueURL = new URI(baseURL + "show_bug.cgi?id=" + publicID);
             return issueURL;
         } catch (URISyntaxException e) {
             logger.error("Error converting URI for issue " + issueID
