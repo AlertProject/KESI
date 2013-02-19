@@ -72,7 +72,9 @@ public class SCMExtractor extends Extractor {
     @Override
     public String[] getCommandExtractor(String url, String type, String user,
             String password) {
-        return getCommandExtractor(url, type);
+        String authURL = url.replaceFirst("://", "://" + user + ":" + password
+                + "@");
+        return getCommandExtractor(authURL, type);
     }
 
 }
