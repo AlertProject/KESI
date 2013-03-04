@@ -47,9 +47,10 @@ public class SensorHandler extends Thread {
 
     /*
      * Patterns for checking whether an event is received from SCM or
-     * ITS repositories TODO: add support for JIRA and GitHub
+     * ITS repositories
      */
     private static final String BUGZILLA_PATTERN = "\\[Bug ([0-9]+)\\] .+";
+    private static final String JIRA_PATTERN = "\\[JIRA\\] \\[(.+)\\] \\((.+)\\-[0-9]+\\).*";
     private static final String SCM_PATTERN = "\\[SCM\\] \\[(.+)\\].*";
 
     /*
@@ -180,12 +181,22 @@ public class SensorHandler extends Thread {
 
                 url = bugzillaURL + "buglist.cgi?product=" + bugzillaProduct;
             } else {
-                pattern = Pattern.compile(SCM_PATTERN);
+                pattern = Pattern.compile(JIRA_PATTERN);
                 matcher = pattern.matcher(subject);
 
                 if (matcher.find()) {
-                    /* Extracts data from SCMs */
-                    url = matcher.group(1);
+                    String jiraURL = matcher.group(1);
+                    String jiraProject = matcher.group(2);
+
+                    url = jiraURL + "/browse/" + jiraProject;
+                } else {
+                    pattern = Pattern.compile(SCM_PATTERN);
+                    matcher = pattern.matcher(subject);
+
+                    if (matcher.find()) {
+                        /* Extracts data from SCMs */
+                        url = matcher.group(1);
+                    }
                 }
             }
 
