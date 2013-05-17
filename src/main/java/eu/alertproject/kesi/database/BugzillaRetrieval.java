@@ -283,7 +283,7 @@ public class BugzillaRetrieval extends ITSRetrieval {
         } else if (value.equals(BUGZILLA_PRIORITY_HIGHEST)) {
             return Issue.HIGHEST;
         } else {
-            return Issue.UNKNOWN;
+            return Issue.LOWEST;
         }
     }
 
