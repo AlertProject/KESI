@@ -74,13 +74,21 @@ public enum EventPublisher {
         int maxMsgs;
         String url;
         String eventsPath;
+        Boolean msgsLimit;
         Boolean debug;
 
         if (publisher != null) {
             return;
         }
 
-        maxMsgs = PreferencesManager.INSTANCE.getPublisherMaxMessages();
+        msgsLimit = PreferencesManager.INSTANCE.getPublisherLimit();
+
+        if (msgsLimit) {
+            maxMsgs = PreferencesManager.INSTANCE.getPublisherMaxMessages();
+        } else {
+            maxMsgs = Publisher.NO_LIMIT;
+        }
+
         url = PreferencesManager.INSTANCE.getPublisherURL();
         eventsPath = PreferencesManager.INSTANCE.getPublisherEventsFilePath();
         debug = PreferencesManager.INSTANCE.getPublisherDebugMode();
@@ -143,6 +151,8 @@ public enum EventPublisher {
     }
 
     private class Publisher extends Thread {
+        private static final int NO_LIMIT = -1;
+
         private Context jndiContext;
         private TopicConnection topicConnection;
         private TopicSession topicSession;
@@ -189,7 +199,7 @@ public enum EventPublisher {
                     continue;
                 }
 
-                if (limit <= 0) {
+                if (limit == 0) {
                     logger.error("Message not send due to MAX MESSAGES limit reached");
                     continue;
                 }
@@ -197,7 +207,7 @@ public enum EventPublisher {
                 event = job.getEvent();
 
                 if (debug) {
-                    sendFakeEvent(job.getEvent());
+                    sendFakeEvent(event);
                 } else {
                     try {
                         sendEvent(event);
@@ -317,7 +327,9 @@ public enum EventPublisher {
 
             logger.info(topicName + " event sent. SeqNum: " + count);
 
-            --limit;
+            if (limit != NO_LIMIT) {
+                --limit;
+            }
 
             if (export) {
                 writeToFile(event.getEventDate(), event.getEventID(),
@@ -330,7 +342,10 @@ public enum EventPublisher {
 
             ++count;
             content = event.toMessage(Integer.toString(count));
-            --limit;
+
+            if (limit != NO_LIMIT) {
+                --limit;
+            }
 
             if (export) {
                 writeToFile(event.getEventDate(), event.getEventID(),

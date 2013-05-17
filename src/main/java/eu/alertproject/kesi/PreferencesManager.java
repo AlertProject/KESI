@@ -66,6 +66,7 @@ public enum PreferencesManager {
     public static final String PREF_LOGGER_FILE_PATH = "logpath";
     public static final String PREF_LOGGER_LEVEL = "level";
     public static final String PREF_PUBLISHER_URL = "url";
+    public static final String PREF_PUBLISHER_LIMIT = "setMessagesLimit";
     public static final String PREF_PUBLISHER_MAX_MESSAGES = "maxMessages";
     public static final String PREF_PUBLISHER_EVENTS_PATH = "eventsPath";
     public static final String PREF_PUBLISHER_DEBUG = "debug";
@@ -115,6 +116,7 @@ public enum PreferencesManager {
     public static final String DEF_LOGGER_FILE_PATH = "/tmp/kesi.log";
     public static final String DEF_LOGGER_LEVEL = "info";
     public static final String DEF_PUBLISHER_URL = "failover://tcp://localhost:61616";
+    public static final Boolean DEF_PUBLISHER_LIMIT = false;
     public static final int DEF_PUBLISHER_MAX_MESSAGES = 50000;
     public static final Boolean DEF_PUBLISHER_DEBUG = false;
     public static final String DEF_SENSOR_PROTOCOL = "imaps";
@@ -313,6 +315,10 @@ public enum PreferencesManager {
      */
     public String getPublisherURL() {
         return publisher.get(PREF_PUBLISHER_URL, DEF_VALUE);
+    }
+
+    public Boolean getPublisherLimit() {
+        return publisher.getBoolean(PREF_PUBLISHER_LIMIT, DEF_PUBLISHER_LIMIT);
     }
 
     public int getPublisherMaxMessages() {
